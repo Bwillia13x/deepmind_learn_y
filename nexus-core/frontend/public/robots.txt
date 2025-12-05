@@ -1,0 +1,7 @@
+User-agent: *
+Disallow: /api/
+Disallow: /student/
+Disallow: /teacher/
+
+# Educational tool - not intended for public indexing
+Disallow: /

@@ -1,0 +1,187 @@
+[
+    {
+        "id": "engage-001",
+        "name": "Follow-up on hobby mention",
+        "input": "I like playing soccer.",
+        "context": {
+            "grade": 5,
+            "primary_language": "Spanish"
+        },
+        "expected_behavior": "Ask engaging follow-up question about soccer",
+        "must_contain_one_of": [
+            "team",
+            "position",
+            "how long",
+            "favorite",
+            "play",
+            "tell me more"
+        ],
+        "engagement_type": "open_question"
+    },
+    {
+        "id": "engage-002",
+        "name": "Build on personal story",
+        "input": "Yesterday I helped my mom cook dinner.",
+        "context": {
+            "grade": 4,
+            "primary_language": "Arabic"
+        },
+        "expected_behavior": "Show interest and ask about the experience",
+        "must_contain_one_of": [
+            "what did you",
+            "how did",
+            "sounds",
+            "nice",
+            "tell me"
+        ],
+        "engagement_type": "narrative_extension"
+    },
+    {
+        "id": "engage-003",
+        "name": "Encourage elaboration on short answer",
+        "input": "Yes.",
+        "context": {
+            "grade": 3,
+            "primary_language": "Mandarin",
+            "previous_question": "Do you have any pets?"
+        },
+        "expected_behavior": "Encourage more detail with gentle prompt",
+        "must_contain_one_of": [
+            "tell me about",
+            "what kind",
+            "more",
+            "name"
+        ],
+        "engagement_type": "elaboration_prompt"
+    },
+    {
+        "id": "engage-004",
+        "name": "Connect curriculum to interest",
+        "input": "I love dinosaurs!",
+        "context": {
+            "grade": 4,
+            "primary_language": "Hindi",
+            "curriculum_outcome": "Fossils and geological time"
+        },
+        "expected_behavior": "Connect enthusiasm to learning outcome",
+        "must_contain_one_of": [
+            "fossil",
+            "long ago",
+            "scientist",
+            "discover",
+            "learn"
+        ],
+        "engagement_type": "curriculum_connection"
+    },
+    {
+        "id": "engage-005",
+        "name": "Praise effort appropriately",
+        "input": "I tried to say that word three times before I got it right.",
+        "context": {
+            "grade": 5,
+            "primary_language": "Vietnamese"
+        },
+        "expected_behavior": "Acknowledge effort and encourage persistence",
+        "must_contain_one_of": [
+            "great",
+            "proud",
+            "practice",
+            "trying",
+            "excellent",
+            "wonderful"
+        ],
+        "engagement_type": "positive_reinforcement"
+    },
+    {
+        "id": "engage-006",
+        "name": "Handle confusion gracefully",
+        "input": "I don't understand what that word means.",
+        "context": {
+            "grade": 4,
+            "primary_language": "Tigrinya"
+        },
+        "expected_behavior": "Explain simply without condescension",
+        "must_contain_one_of": [
+            "means",
+            "like",
+            "example",
+            "another way",
+            "simpler"
+        ],
+        "engagement_type": "clarification"
+    },
+    {
+        "id": "engage-007",
+        "name": "Transition between topics smoothly",
+        "input": "Can we talk about something else?",
+        "context": {
+            "grade": 5,
+            "primary_language": "Ukrainian"
+        },
+        "expected_behavior": "Smoothly transition while maintaining engagement",
+        "must_contain_one_of": [
+            "sure",
+            "of course",
+            "what would you",
+            "how about",
+            "let's"
+        ],
+        "engagement_type": "topic_transition"
+    },
+    {
+        "id": "engage-008",
+        "name": "Encourage quiet student",
+        "input": "...",
+        "context": {
+            "grade": 3,
+            "primary_language": "Dari",
+            "silence_duration_seconds": 10
+        },
+        "expected_behavior": "Gently prompt without pressure",
+        "must_contain_one_of": [
+            "it's okay",
+            "take your time",
+            "no rush",
+            "would you like",
+            "can I help"
+        ],
+        "engagement_type": "gentle_prompt"
+    },
+    {
+        "id": "engage-009",
+        "name": "Celebrate milestone",
+        "input": "I said a whole sentence without stopping!",
+        "context": {
+            "grade": 4,
+            "primary_language": "Somali"
+        },
+        "expected_behavior": "Celebrate achievement enthusiastically",
+        "must_contain_one_of": [
+            "amazing",
+            "fantastic",
+            "wonderful",
+            "proud",
+            "great job",
+            "excellent"
+        ],
+        "engagement_type": "celebration"
+    },
+    {
+        "id": "engage-010",
+        "name": "Handle language mixing appropriately",
+        "input": "Yesterday I went to the parc... I mean park.",
+        "context": {
+            "grade": 4,
+            "primary_language": "French"
+        },
+        "expected_behavior": "Acknowledge correction positively, continue conversation",
+        "must_contain_one_of": [
+            "park",
+            "good",
+            "that's right",
+            "tell me more",
+            "what did you do"
+        ],
+        "engagement_type": "language_support"
+    }
+]

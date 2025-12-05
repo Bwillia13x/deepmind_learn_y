@@ -1,0 +1,216 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+/* === CSS Custom Properties === */
+
+@layer base {
+    :root {
+        /* Light theme */
+        --background: 0 0% 100%;
+        --foreground: 224 71% 4%;
+
+        --card: 0 0% 100%;
+        --card-foreground: 224 71% 4%;
+
+        --popover: 0 0% 100%;
+        --popover-foreground: 224 71% 4%;
+
+        --primary: 221 83% 53%;
+        --primary-foreground: 210 40% 98%;
+
+        --secondary: 262 83% 58%;
+        --secondary-foreground: 210 40% 98%;
+
+        --muted: 220 14% 96%;
+        --muted-foreground: 220 9% 46%;
+
+        --accent: 220 14% 96%;
+        --accent-foreground: 224 71% 4%;
+
+        --success: 142 76% 36%;
+        --success-foreground: 210 40% 98%;
+
+        --warning: 38 92% 50%;
+        --warning-foreground: 224 71% 4%;
+
+        --destructive: 0 84% 60%;
+        --destructive-foreground: 210 40% 98%;
+
+        --border: 220 13% 91%;
+        --input: 220 13% 91%;
+        --ring: 220 70% 50%;
+
+        --radius: 0.5rem;
+    }
+
+    .dark {
+        /* Dark theme */
+        --background: 224 71% 4%;
+        --foreground: 210 40% 98%;
+
+        --card: 224 71% 4%;
+        --card-foreground: 210 40% 98%;
+
+        --popover: 224 71% 4%;
+        --popover-foreground: 210 40% 98%;
+
+        --primary: 210 40% 98%;
+        --primary-foreground: 222.2 47.4% 11.2%;
+
+        --secondary: 217.2 32.6% 17.5%;
+        --secondary-foreground: 210 40% 98%;
+
+        --muted: 217.2 32.6% 17.5%;
+        --muted-foreground: 215 20.2% 65.1%;
+
+        --accent: 217.2 32.6% 17.5%;
+        --accent-foreground: 210 40% 98%;
+
+        --destructive: 0 62.8% 30.6%;
+        --destructive-foreground: 210 40% 98%;
+
+        --border: 217.2 32.6% 17.5%;
+        --input: 217.2 32.6% 17.5%;
+        --ring: 212.7 26.8% 83.9%;
+    }
+}
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+        font-feature-settings: "rlig" 1, "calt" 1;
+    }
+}
+
+@layer utilities {
+    .text-gradient-primary {
+        @apply bg-clip-text text-transparent bg-gradient-to-r from-nexus-primary to-nexus-secondary;
+    }
+
+    .app-grid-pattern {
+        @apply bg-grid-pattern bg-[length:32px_32px];
+    }
+
+    .glass {
+        @apply bg-white/70 backdrop-blur-lg border border-white/20 shadow-xl dark:bg-black/70 dark:border-white/10;
+    }
+
+    .glass-card {
+        @apply bg-card/80 backdrop-blur-sm border border-border/50 shadow-sm hover:shadow-md transition-all duration-300;
+    }
+}
+
+
+
+/* === Base Styles === */
+
+@layer base {
+    * {
+        @apply border-border;
+    }
+
+    body {
+        @apply bg-background text-foreground;
+        font-feature-settings: "rlig" 1, "calt" 1;
+    }
+
+    /* Improve accessibility focus styles */
+    :focus-visible {
+        @apply outline-none ring-2 ring-ring ring-offset-2 ring-offset-background;
+    }
+}
+
+/* === Component Styles === */
+
+@layer components {
+
+    /* Voice Orb custom animations */
+    @keyframes voice-pulse {
+
+        0%,
+        100% {
+            transform: scale(1);
+            opacity: 0.8;
+        }
+
+        50% {
+            transform: scale(1.1);
+            opacity: 1;
+        }
+    }
+
+    @keyframes voice-ripple {
+        0% {
+            transform: scale(0.8);
+            opacity: 0.8;
+        }
+
+        100% {
+            transform: scale(1.5);
+            opacity: 0;
+        }
+    }
+
+    .animate-voice-pulse {
+        animation: voice-pulse 1.5s ease-in-out infinite;
+    }
+
+    .animate-voice-ripple {
+        animation: voice-ripple 1.5s ease-out infinite;
+    }
+}
+
+/* === Utility Classes === */
+
+@layer utilities {
+
+    /* Hide scrollbar while maintaining functionality */
+    .scrollbar-hide {
+        -ms-overflow-style: none;
+        scrollbar-width: none;
+    }
+
+    .scrollbar-hide::-webkit-scrollbar {
+        display: none;
+    }
+
+    /* Custom scrollbar */
+    .scrollbar-thin {
+        scrollbar-width: thin;
+        scrollbar-color: hsl(var(--muted-foreground)) transparent;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar {
+        width: 6px;
+        height: 6px;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar-track {
+        background: transparent;
+    }
+
+    .scrollbar-thin::-webkit-scrollbar-thumb {
+        background-color: hsl(var(--muted-foreground));
+        border-radius: 9999px;
+    }
+
+    /* Gradient text */
+    .text-gradient-primary {
+        @apply bg-gradient-to-r from-primary to-secondary bg-clip-text text-transparent;
+    }
+}
+
+/* === Animation Delays === */
+
+.animation-delay-1500 {
+    animation-delay: 1.5s;
+}
+
+.animation-delay-2000 {
+    animation-delay: 2s;
+}

@@ -1,0 +1,271 @@
+# NEXUS Staging Deployment
+# Deploys to staging environment after CI passes and eval gate succeeds
+# Designed for Azure Container Apps deployment
+
+name: Deploy to Staging
+
+on:
+    push:
+        branches: [main]
+    workflow_dispatch:
+        inputs:
+            skip_evals:
+                description: "Skip eval gate (emergency only)"
+                required: false
+                default: false
+                type: boolean
+
+concurrency:
+    group: deploy-staging
+    cancel-in-progress: false
+
+env:
+    REGISTRY: ghcr.io
+    BACKEND_IMAGE: ghcr.io/${{ github.repository }}/nexus-backend
+    FRONTEND_IMAGE: ghcr.io/${{ github.repository }}/nexus-frontend
+    # Azure Container Apps configuration
+    AZURE_RESOURCE_GROUP: nexus-staging-rg
+    BACKEND_APP_NAME: nexus-backend-staging
+    FRONTEND_APP_NAME: nexus-frontend-staging
+
+jobs:
+    # Run CI first
+    ci:
+        name: Run CI
+        uses: ./.github/workflows/ci.yml
+
+    # Run Eval Gate (can be skipped for emergencies)
+    eval-gate:
+        name: Run Eval Gate
+        if: ${{ !inputs.skip_evals }}
+        uses: ./.github/workflows/eval-gate.yml
+
+    # Build and push Docker images
+    build-images:
+        name: Build & Push Images
+        runs-on: ubuntu-latest
+        needs: [ci]
+        permissions:
+            contents: read
+            packages: write
+
+        outputs:
+            backend_tag: ${{ steps.meta-backend.outputs.tags }}
+            frontend_tag: ${{ steps.meta-frontend.outputs.tags }}
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Docker Buildx
+              uses: docker/setup-buildx-action@v3
+
+            - name: Log in to Container Registry
+              uses: docker/login-action@v3
+              with:
+                  registry: ${{ env.REGISTRY }}
+                  username: ${{ github.actor }}
+                  password: ${{ secrets.GITHUB_TOKEN }}
+
+            - name: Extract metadata for backend
+              id: meta-backend
+              uses: docker/metadata-action@v5
+              with:
+                  images: ${{ env.BACKEND_IMAGE }}
+                  tags: |
+                      type=sha,prefix=
+                      type=ref,event=branch
+                      type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+            - name: Build and push backend
+              uses: docker/build-push-action@v5
+              with:
+                  context: ./backend
+                  push: true
+                  tags: ${{ steps.meta-backend.outputs.tags }}
+                  labels: ${{ steps.meta-backend.outputs.labels }}
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+                  build-args: |
+                      BUILD_VERSION=${{ github.sha }}
+
+            - name: Extract metadata for frontend
+              id: meta-frontend
+              uses: docker/metadata-action@v5
+              with:
+                  images: ${{ env.FRONTEND_IMAGE }}
+                  tags: |
+                      type=sha,prefix=
+                      type=ref,event=branch
+                      type=raw,value=latest,enable=${{ github.ref == 'refs/heads/main' }}
+
+            - name: Build and push frontend
+              uses: docker/build-push-action@v5
+              with:
+                  context: ./frontend
+                  push: true
+                  tags: ${{ steps.meta-frontend.outputs.tags }}
+                  labels: ${{ steps.meta-frontend.outputs.labels }}
+                  cache-from: type=gha
+                  cache-to: type=gha,mode=max
+                  build-args: |
+                      NEXT_PUBLIC_API_URL=${{ vars.STAGING_API_URL }}
+
+    # Deploy to Azure Container Apps
+    deploy-staging:
+        name: Deploy to Staging
+        runs-on: ubuntu-latest
+        needs: [build-images, eval-gate]
+        if: |
+            always() && 
+            needs.build-images.result == 'success' && 
+            (needs.eval-gate.result == 'success' || needs.eval-gate.result == 'skipped')
+        environment:
+            name: staging
+            url: ${{ vars.STAGING_URL }}
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Azure Login
+              uses: azure/login@v2
+              with:
+                  creds: ${{ secrets.AZURE_CREDENTIALS }}
+
+            - name: Deploy Backend to Azure Container Apps
+              uses: azure/container-apps-deploy-action@v1
+              with:
+                  resourceGroup: ${{ env.AZURE_RESOURCE_GROUP }}
+                  containerAppName: ${{ env.BACKEND_APP_NAME }}
+                  imageToDeploy: ${{ env.BACKEND_IMAGE }}:${{ github.sha }}
+                  environmentVariables: |
+                      DATABASE_URL=secretref:database-url
+                      OPENAI_API_KEY=secretref:openai-api-key
+                      SECRET_KEY=secretref:secret-key
+                      ENVIRONMENT=staging
+                      CORS_ORIGINS=${{ vars.STAGING_CORS_ORIGINS }}
+
+            - name: Deploy Frontend to Azure Container Apps
+              uses: azure/container-apps-deploy-action@v1
+              with:
+                  resourceGroup: ${{ env.AZURE_RESOURCE_GROUP }}
+                  containerAppName: ${{ env.FRONTEND_APP_NAME }}
+                  imageToDeploy: ${{ env.FRONTEND_IMAGE }}:${{ github.sha }}
+                  environmentVariables: |
+                      NEXT_PUBLIC_API_URL=${{ vars.STAGING_API_URL }}
+
+            - name: Run Database Migrations
+              run: |
+                  # Run Alembic migrations against staging database
+                  az containerapp exec \
+                    --name ${{ env.BACKEND_APP_NAME }} \
+                    --resource-group ${{ env.AZURE_RESOURCE_GROUP }} \
+                    --command "alembic upgrade head"
+
+            - name: Health Check
+              run: |
+                  # Wait for deployment to stabilize
+                  sleep 30
+
+                  # Check backend health
+                  BACKEND_URL="${{ vars.STAGING_API_URL }}/health"
+                  for i in {1..10}; do
+                    if curl -sf "$BACKEND_URL" > /dev/null; then
+                      echo "✅ Backend health check passed"
+                      break
+                    fi
+                    echo "Waiting for backend... (attempt $i/10)"
+                    sleep 10
+                  done
+
+                  # Check frontend
+                  FRONTEND_URL="${{ vars.STAGING_URL }}"
+                  for i in {1..10}; do
+                    if curl -sf "$FRONTEND_URL" > /dev/null; then
+                      echo "✅ Frontend health check passed"
+                      break
+                    fi
+                    echo "Waiting for frontend... (attempt $i/10)"
+                    sleep 10
+                  done
+
+    # Post-deployment smoke tests
+    smoke-tests:
+        name: Smoke Tests
+        runs-on: ubuntu-latest
+        needs: deploy-staging
+        if: success()
+
+        steps:
+            - name: Checkout code
+              uses: actions/checkout@v4
+
+            - name: Set up Python
+              uses: actions/setup-python@v5
+              with:
+                  python-version: "3.11"
+
+            - name: Install test dependencies
+              run: |
+                  pip install httpx pytest
+
+            - name: Run Smoke Tests
+              env:
+                  API_URL: ${{ vars.STAGING_API_URL }}
+              run: |
+                  # Basic API endpoint tests
+                  python -c "
+                  import httpx
+                  import sys
+
+                  api_url = '${{ vars.STAGING_API_URL }}'
+
+                  # Test health endpoint
+                  r = httpx.get(f'{api_url}/health')
+                  assert r.status_code == 200, f'Health check failed: {r.status_code}'
+                  print('✅ Health endpoint OK')
+
+                  # Test students endpoint (should require auth or return empty)
+                  r = httpx.get(f'{api_url}/api/v1/students')
+                  assert r.status_code in [200, 401, 403], f'Students endpoint unexpected: {r.status_code}'
+                  print('✅ Students endpoint OK')
+
+                  # Test reports endpoint
+                  r = httpx.get(f'{api_url}/api/v1/reports')
+                  assert r.status_code in [200, 401, 403], f'Reports endpoint unexpected: {r.status_code}'
+                  print('✅ Reports endpoint OK')
+
+                  print('\\n✅ All smoke tests passed!')
+                  "
+
+    # Notify on deployment
+    notify:
+        name: Notify
+        runs-on: ubuntu-latest
+        needs: [deploy-staging, smoke-tests]
+        if: always()
+
+        steps:
+            - name: Create deployment summary
+              run: |
+                  echo "## 🚀 Staging Deployment Summary" >> $GITHUB_STEP_SUMMARY
+                  echo "" >> $GITHUB_STEP_SUMMARY
+                  echo "| Component | Status |" >> $GITHUB_STEP_SUMMARY
+                  echo "|-----------|--------|" >> $GITHUB_STEP_SUMMARY
+
+                  if [ "${{ needs.deploy-staging.result }}" == "success" ]; then
+                    echo "| Deployment | ✅ Success |" >> $GITHUB_STEP_SUMMARY
+                  else
+                    echo "| Deployment | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+                  fi
+
+                  if [ "${{ needs.smoke-tests.result }}" == "success" ]; then
+                    echo "| Smoke Tests | ✅ Passed |" >> $GITHUB_STEP_SUMMARY
+                  else
+                    echo "| Smoke Tests | ❌ Failed |" >> $GITHUB_STEP_SUMMARY
+                  fi
+
+                  echo "" >> $GITHUB_STEP_SUMMARY
+                  echo "**Staging URL:** ${{ vars.STAGING_URL }}" >> $GITHUB_STEP_SUMMARY
+                  echo "**Commit:** ${{ github.sha }}" >> $GITHUB_STEP_SUMMARY

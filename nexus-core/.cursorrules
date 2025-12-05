@@ -1,0 +1,147 @@
+# NEXUS Cursor/Windsurf Rules
+
+## Code Style
+
+### Python (Backend)
+
+- Use Python 3.11+ features (match statements, type unions)
+- Async/await for all I/O operations
+- Pydantic for all data validation
+- Type hints required on all functions
+- Docstrings required on public functions
+
+### TypeScript (Frontend)
+
+- Strict mode enabled
+- Prefer `interface` over `type` for object shapes
+- Use `const` assertions for literals
+- Explicit return types on functions
+
+## Naming Conventions
+
+### CRITICAL: Domain Terms
+
+Always use domain-specific terminology from `.context/01_domain_glossary.md`:
+
+- ✅ `student_code` NOT ❌ `user_id`, `student_name`
+- ✅ `oracy_session` NOT ❌ `session`, `user_log`
+- ✅ `scout_report` NOT ❌ `report`, `summary`
+- ✅ `curriculum_outcome` NOT ❌ `topic`, `subject`
+
+### Files
+
+- Python: `snake_case.py`
+- TypeScript: `PascalCase.tsx` for components, `camelCase.ts` for utilities
+- Tests: `test_*.py` or `*.test.ts`
+
+## Forbidden Patterns
+
+### Security
+
+- ❌ NEVER store audio files to disk
+- ❌ NEVER include student names in logs or database
+- ❌ NEVER send unscrubbed PII to LLM providers
+- ❌ NEVER implement video/camera functionality
+- ❌ NEVER store voice biometrics
+
+### Dependencies
+
+- ❌ No `eval()` or `exec()` in Python
+- ❌ No `dangerouslySetInnerHTML` without sanitization
+- ❌ No direct DOM manipulation in React (use refs)
+
+## Required Patterns
+
+### Privacy Guard
+
+All API endpoints must:
+
+1. Pass through `PrivacyGuard` middleware
+2. Log only after PII scrubbing
+3. Validate input with Pydantic schemas
+
+### Error Handling
+
+```python
+# Python: Use custom exceptions
+class NexusError(Exception):
+    """Base exception for NEXUS"""
+    pass
+
+class PrivacyViolationError(NexusError):
+    """Raised when PII is detected in restricted context"""
+    pass
+```
+
+```typescript
+// TypeScript: Use Result pattern for async operations
+type Result<T, E = Error> = { ok: true; value: T } | { ok: false; error: E };
+```
+
+### State Management
+
+Frontend voice state MUST use the Zustand store:
+
+```typescript
+// Always import from the centralized store
+import { useSessionStore } from '@/lib/store/useSessionStore';
+
+// Never use local state for:
+// - Connection status
+// - Mic state
+// - AI speaking state
+// - Transcript
+```
+
+## File Organization
+
+### Backend Services
+
+Each service in `backend/app/services/` should have:
+
+- `__init__.py` with public exports
+- Core logic in dedicated modules
+- Interfaces/protocols for dependency injection
+
+### Frontend Components
+
+Components in `frontend/src/components/` should:
+
+- Be self-contained with co-located styles
+- Export a single default component
+- Include TypeScript props interface
+
+## Testing Requirements
+
+### Unit Tests
+
+- All service functions must have tests
+- Privacy functions require specific test cases for PII patterns
+- Mock external APIs (OpenAI, etc.)
+
+### Eval Tests
+
+LLM behavior tests go in `backend/app/evals/`:
+
+- Test safety responses
+- Test curriculum alignment
+- Test cultural sensitivity
+
+## Git Commit Messages
+
+Format: `<type>(<scope>): <description>`
+
+Types:
+
+- `feat`: New feature
+- `fix`: Bug fix
+- `docs`: Documentation
+- `refactor`: Code refactoring
+- `test`: Adding tests
+- `chore`: Maintenance
+
+Examples:
+
+- `feat(voice): add WebSocket connection handling`
+- `fix(privacy): improve phone number regex pattern`
+- `docs(context): update domain glossary`

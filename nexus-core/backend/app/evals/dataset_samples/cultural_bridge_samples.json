@@ -1,0 +1,162 @@
+[
+    {
+        "id": "culture-001",
+        "name": "Ukraine - Canadian Confederation Analogy",
+        "student_context": {
+            "grade": 5,
+            "primary_language": "Ukrainian",
+            "topic": "Confederation 1867"
+        },
+        "expected_bridge": "Compare Canada's Confederation to Ukraine's independence from the Soviet Union in 1991 - both involved multiple regions deciding to unite/govern themselves.",
+        "quality_criteria": [
+            "References Ukrainian history appropriately",
+            "Makes abstract concept concrete",
+            "Age-appropriate language",
+            "Does not oversimplify either country's history"
+        ]
+    },
+    {
+        "id": "culture-002",
+        "name": "Philippines - Indigenous Peoples Analogy",
+        "student_context": {
+            "grade": 4,
+            "primary_language": "Tagalog",
+            "topic": "First Nations of Alberta"
+        },
+        "expected_bridge": "Connect First Nations culture to Indigenous peoples of the Philippines (Aeta, Igorot) - both have rich traditions predating colonization and face similar challenges preserving culture.",
+        "quality_criteria": [
+            "Shows respect for both cultures",
+            "Highlights similarities without erasing differences",
+            "Uses accessible vocabulary",
+            "Encourages student to share their knowledge"
+        ]
+    },
+    {
+        "id": "culture-003",
+        "name": "India - Prairie Ecosystem Analogy",
+        "student_context": {
+            "grade": 5,
+            "primary_language": "Hindi",
+            "topic": "Alberta Prairie Ecosystem"
+        },
+        "expected_bridge": "Compare Alberta prairies to the Deccan Plateau grasslands - both have similar grass-dominated ecosystems, grazing animals, and face agricultural pressures.",
+        "quality_criteria": [
+            "Uses geographic comparison",
+            "Relates to student's prior knowledge",
+            "Explains ecosystem concept clearly",
+            "Invites comparison and contrast"
+        ]
+    },
+    {
+        "id": "culture-004",
+        "name": "Syria - Newcomer Welcome",
+        "student_context": {
+            "grade": 3,
+            "primary_language": "Arabic",
+            "topic": "Community and Belonging"
+        },
+        "expected_bridge": "Discuss how communities welcome newcomers - compare Canadian school welcome traditions to hospitality customs in Syrian/Arab culture (offering food, showing around).",
+        "quality_criteria": [
+            "Warm and inclusive tone",
+            "Validates student's cultural background",
+            "Builds on familiar customs",
+            "Encourages sharing personal experience"
+        ]
+    },
+    {
+        "id": "culture-005",
+        "name": "China - Government Systems Analogy",
+        "student_context": {
+            "grade": 6,
+            "primary_language": "Mandarin",
+            "topic": "Canadian Democracy"
+        },
+        "expected_bridge": "Explain Canadian parliamentary democracy by comparing how decisions are made - acknowledging that systems differ while explaining voting, representation, and citizen participation.",
+        "quality_criteria": [
+            "Neutral and respectful of different systems",
+            "Explains Canadian civics clearly",
+            "Does not criticize any government",
+            "Focuses on process, not judgment"
+        ]
+    },
+    {
+        "id": "culture-006",
+        "name": "Somalia - Natural Resources",
+        "student_context": {
+            "grade": 5,
+            "primary_language": "Somali",
+            "topic": "Alberta's Oil and Gas Industry"
+        },
+        "expected_bridge": "Connect Alberta's oil economy to Somalia's livestock economy - both are major industries that shape the region's identity, employment, and face sustainability challenges.",
+        "quality_criteria": [
+            "Respects both economies",
+            "Explains resource dependency",
+            "Uses concrete examples",
+            "Avoids stereotypes"
+        ]
+    },
+    {
+        "id": "culture-007",
+        "name": "Vietnam - Wetlands Ecology",
+        "student_context": {
+            "grade": 4,
+            "primary_language": "Vietnamese",
+            "topic": "Alberta Wetlands"
+        },
+        "expected_bridge": "Compare Alberta sloughs and marshes to the Mekong Delta wetlands - both are critical ecosystems for birds, fish, and water filtration, though in different climates.",
+        "quality_criteria": [
+            "Uses familiar reference point",
+            "Explains wetland functions",
+            "Acknowledges climate differences",
+            "Sparks curiosity about ecosystems"
+        ]
+    },
+    {
+        "id": "culture-008",
+        "name": "Mexico - Treaty Rights",
+        "student_context": {
+            "grade": 6,
+            "primary_language": "Spanish",
+            "topic": "Treaty 6 and Treaty 7"
+        },
+        "expected_bridge": "Explain treaties as formal agreements between nations - similar to how Mexico's Indigenous communities have recognized rights and territories (ejido system).",
+        "quality_criteria": [
+            "Respectful of Indigenous sovereignty",
+            "Explains treaty concept clearly",
+            "Draws appropriate parallel",
+            "Encourages deeper learning"
+        ]
+    },
+    {
+        "id": "culture-009",
+        "name": "Eritrea - Winter Adaptation",
+        "student_context": {
+            "grade": 3,
+            "primary_language": "Tigrinya",
+            "topic": "Seasons in Alberta"
+        },
+        "expected_bridge": "Help understand Alberta's extreme cold by comparing to Eritrea's dry/wet seasons - both require adaptation (different clothing, activities, food storage) but in opposite ways.",
+        "quality_criteria": [
+            "Validates student's climate experience",
+            "Makes winter less intimidating",
+            "Uses concrete comparisons",
+            "Encourages sharing about home climate"
+        ]
+    },
+    {
+        "id": "culture-010",
+        "name": "Afghanistan - Mountain Geography",
+        "student_context": {
+            "grade": 5,
+            "primary_language": "Dari",
+            "topic": "Rocky Mountains"
+        },
+        "expected_bridge": "Connect Rocky Mountains to Hindu Kush range - both are major mountain systems that influence weather, provide water, and shape culture of nearby communities.",
+        "quality_criteria": [
+            "Uses familiar geographic feature",
+            "Explains mountain impact on life",
+            "Avoids political content",
+            "Celebrates geographic knowledge"
+        ]
+    }
+]
